@@ -1,22 +1,20 @@
-import React from 'react'
-import './App.css'
+import React from 'react';
+import './App.css';
 import { Routes, Route } from "react-router-dom";
 
 import HomePage from './pages/Home';
-import { SocketProviders } from '/providers/Socket';
+import { SocketContextProviders } from '/src/providers/Socket.jsx';
+
 const App = () => {
   return (
     <div className='App'>
-      <Routes>
-        <SocketProviders>
-
+      <SocketContextProviders>
+        <Routes>
           <Route path='/' element={<HomePage />} />
-
-        </SocketProviders>
-
-      </Routes>
+        </Routes>
+      </SocketContextProviders>
     </div>
-  )
-}
+  );
+};
 
-export default App
+export default App;

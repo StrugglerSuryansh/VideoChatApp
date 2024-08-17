@@ -1,28 +1,39 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const { Server } = require('socket.io');
+const http = require('http');
 
 const app = express();
-const httpServer = require('http').createServer(app); // Create an HTTP server
+const httpServer = http.createServer(app); // Create a single HTTP server for both Express and Socket.IO
 
-const io = new Server(httpServer);
-
+// Setup Socket.IO with CORS
+const io = new Server(httpServer, {
+    cors: {
+        origin: 'http://localhost:8000', // Allow requests from this origin
+        methods: ['GET', 'POST'], // Allowed methods
+        credentials: true // Allow cookies to be sent
+    }
+});
 
 app.use(bodyParser.json());
-const emailToSocketMapping = new Map(); // Assuming you meant to use 'emailToSocketMapping'
 
-io.on("connection", (socket) => {
-    socket.on('join-room', (data, emailId) => { // Option 2: separate argument for emailId
-        console.log('User', emailId, 'joined room', data.roomId) // Using data.roomId
+// Add a route handler for the root path
+app.get('/', (req, res) => {
+    res.send('Welcome to the server!');
+});
+
+const emailToSocketMapping = new Map();
+
+io.on('connection', (socket) => {
+    socket.on('join-room', (data, emailId) => {
+        console.log('User', emailId, 'joined room', data.roomId);
         emailToSocketMapping.set(emailId, socket.id);
-        const { roomId } = data; // Option 1: destructure roomId from data
+        const { roomId } = data;
         socket.join(roomId);
-        socket.broadcast.to(roomId).emit('user-joined', { userId: emailId }); // Consider using userId instead
+        socket.broadcast.to(roomId).emit('user-joined', { userId: emailId });
     });
 });
 
-app.listen(
-    8000,
-    () => console.log("Server is running on port 8000")
-);
-io.listen(8001);
+httpServer.listen(8000, () => {
+    console.log("Server is running on port 8000");
+});
