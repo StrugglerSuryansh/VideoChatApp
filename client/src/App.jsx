@@ -10,7 +10,7 @@ const App = () => {
     <div className='App'>
       <SocketContextProviders>
         <Routes>
-          <Route path='/' element={<HomePage />} />
+          <Route path='/' element={<HomePage />} /> //homepage lobby screen hai
         </Routes>
       </SocketContextProviders>
     </div>
